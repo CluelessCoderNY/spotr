@@ -1,24 +1,42 @@
-const puppeteer = require("puppeteer")
+const puppeteer = require("puppeteer");
 
 const main = async () => {
   const postUrl =
-    "https://newyork.craigslist.org/mnh/rvs/d/brooklyn-double-cozy-bed-pleasure-way/6918858716.html";
+    "https://hudsonvalley.craigslist.org/rvs/d/stormville-winnebago-view-diesel/6918806587.html";
 
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
 
   await page.goto(postUrl, { waitUntil: "networkidle2" });
 
   const data = await page.evaluate(() => {
+    clickButton = async () => {
+      // await document.querySelector('button[class="reply-button').click();
+      // await page.waitFor(10000);
+    };
+
     const title = document.querySelector('span[id="titletextonly"]').innerText;
     const price = document.querySelector('span[class="price"]').innerText;
     const description = document.querySelector('section[id="postingbody"]')
       .innerText;
+    const postAge = document.querySelector('time[class="date timeago"]')
+      .innerText;
+
+    const rawTags = document.querySelectorAll('p[class="attrgroup"] span');
+    const convertedTags = Array.prototype.slice.call(rawTags);
+    const tags = convertedTags.map(tag => tag.innerText);
+
+    const nodes = document.querySelector('div[id="thumbs"]').childNodes;
+    const convertedNodes = Array.prototype.slice.call(nodes);
+    const images = convertedNodes.map(node => node.getAttribute("href"));
 
     return {
       title,
       price,
-      description
+      description,
+      postAge,
+      tags,
+      images
     };
   });
 
@@ -27,7 +45,6 @@ const main = async () => {
   debugger;
 
   await browser.close();
-}
+};
 
-main()
-
+main();
