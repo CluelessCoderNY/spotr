@@ -10,10 +10,8 @@ const main = async () => {
   await page.goto(postUrl, { waitUntil: "networkidle2" });
 
   const data = await page.evaluate(() => {
-    clickButton = async () => {
-      // await document.querySelector('button[class="reply-button').click();
-      // await page.waitFor(10000);
-    };
+    // await document.querySelector('button[class="reply-button').click();
+    // await page.waitFor(10000);
 
     const title = document.querySelector('span[id="titletextonly"]').innerText;
     const price = document.querySelector('span[class="price"]').innerText;
@@ -30,13 +28,22 @@ const main = async () => {
     const convertedNodes = Array.prototype.slice.call(nodes);
     const images = convertedNodes.map(node => node.getAttribute("href"));
 
+    const mapLat = document
+      .querySelector('div[id="map')
+      .getAttribute("data-latitude");
+    const mapLong = document
+      .querySelector('div[id="map')
+      .getAttribute("data-longitude");
+
     return {
       title,
       price,
       description,
       postAge,
       tags,
-      images
+      images,
+      mapLat,
+      mapLong
     };
   });
 
