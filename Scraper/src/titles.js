@@ -1,27 +1,31 @@
 const puppeteer = require("puppeteer");
+const postUrl = "https://newyork.craigslist.org/search/rva?postedToday=1";
 
-async function titles(page) {
+const chooseTitle = async () => {
+  const browser = await puppeteer.launch({ headless: false });
+  const page = await browser.newPage();
+  await page.goto(postUrl, { waitUntil: "networkidle2" });
+
   try {
-    const selector = document.querySelector(
-      "#sortable-results > .rows > .result-row:nth-child(1) > .result-info > .result-title"
-    );
+    const data = await page.evaluate(() => {
+      const rawTitles = document.querySelectorAll(
+        'a[class="result-title hdrlnk"]'
+      );
 
-    const blah = await page.evaluate(selector => {
-      document.querySelector(selector);
-    }, selector);
+      const convertedTitles = Array.prototype.slice.call(rawTitles);
+      const titles = convertedTitles.map(title => title.innerText);
 
-    const rawTitles = await document.querySelector(
-      'ul[class="rows"] > li > p a'
-    ).innerText;
+      return titles;
+    });
 
-    const convertedTitles = Array.prototype.slice.call(rawTitles);
-
-    const titles = convertedTitles.map(title => title);
-
-    console.log(titles);
+    console.log(data.filter(x => x !== "#"));
   } catch (err) {
-    console.log("FUCK!", err);
+    console.log("fuck!", err);
   }
-}
 
-module.exports = titles;
+  // await browser.close();
+};
+
+chooseTitle();
+
+module.exports = "chooseTitle";
