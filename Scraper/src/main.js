@@ -1,57 +1,57 @@
 const puppeteer = require("puppeteer");
+const getUrls = require("./urls");
+
+const postUrl = "https://newyork.craigslist.org/search/rva?postedToday=1";
 
 const main = async () => {
-  const postUrl =
-    "https://hudsonvalley.craigslist.org/rvs/d/stormville-winnebago-view-diesel/6918806587.html";
-
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
 
-  await page.goto(postUrl, { waitUntil: "networkidle2" });
+  const urls = await getUrls(postUrl);
 
-  const data = await page.evaluate(() => {
-    // await document.querySelector('button[class="reply-button').click();
-    // await page.waitFor(10000);
+  const resolvedData = [];
 
-    const title = document.querySelector('span[id="titletextonly"]').innerText;
-    const price = document.querySelector('span[class="price"]').innerText;
-    const description = document.querySelector('section[id="postingbody"]')
-      .innerText;
-    const postAge = document.querySelector('time[class="date timeago"]')
-      .innerText;
+  for (let i = 0; i < 2; i++) {
+    await page.goto(urls[i], { waitUntil: "networkidle2" });
 
-    const rawTags = document.querySelectorAll('p[class="attrgroup"] span');
-    const convertedTags = Array.prototype.slice.call(rawTags);
-    const tags = convertedTags.map(tag => tag.innerText);
+    return await page.evaluate(() => {
+      const title = document.querySelector('span[id="titletextonly"]')
+        .innerText;
+      const price = document.querySelector('span[class="price"]').innerText;
+      const description = document.querySelector('section[id="postingbody"]')
+        .innerText;
+      const postAge = document.querySelector('time[class="date timeago"]')
+        .innerText;
 
-    const nodes = document.querySelector('div[id="thumbs"]').childNodes;
-    const convertedNodes = Array.prototype.slice.call(nodes);
-    const images = convertedNodes.map(node => node.getAttribute("href"));
+      const rawTags = document.querySelectorAll('p[class="attrgroup"] span');
+      const convertedTags = Array.prototype.slice.call(rawTags);
+      const tags = convertedTags.map(tag => tag.innerText);
 
-    const mapLat = document
-      .querySelector('div[id="map')
-      .getAttribute("data-latitude");
-    const mapLong = document
-      .querySelector('div[id="map')
-      .getAttribute("data-longitude");
+      const nodes = document.querySelector('div[id="thumbs"]').childNodes;
+      const convertedNodes = Array.prototype.slice.call(nodes);
+      const images = convertedNodes.map(node => node.getAttribute("href"));
 
-    return {
-      title,
-      price,
-      description,
-      postAge,
-      tags,
-      images,
-      mapLat,
-      mapLong
-    };
-  });
+      const mapLat = document
+        .querySelector('div[id="map')
+        .getAttribute("data-latitude");
+      const mapLong = document
+        .querySelector('div[id="map')
+        .getAttribute("data-longitude");
 
-  console.log(data);
+      resolvedData.push({
+        title,
+        price,
+        description,
+        postAge,
+        tags,
+        images,
+        mapLat,
+        mapLong
+      });
+    });
+  }
 
-  debugger;
-
-  await browser.close();
+  console.log(resolvedData);
 };
 
 main();

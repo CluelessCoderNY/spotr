@@ -1,8 +1,8 @@
-const puppeteer = require("puppeteer");
-const postUrl = "https://newyork.craigslist.org/search/rva?postedToday=1";
+// const puppeteer = require("puppeteer");
+// const postUrl = "https://newyork.craigslist.org/search/rva?postedToday=1";
 
-const chooseTitle = async () => {
-  const browser = await puppeteer.launch({ headless: false });
+const getTitles = async () => {
+  const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
   await page.goto(postUrl, { waitUntil: "networkidle2" });
 
@@ -18,14 +18,14 @@ const chooseTitle = async () => {
       return titles;
     });
 
-    console.log(data.filter(x => x !== "#"));
+    console.log(data);
   } catch (err) {
-    console.log("fuck!", err);
+    console.log("oops!", err);
   }
 
-  // await browser.close();
+  await browser.close();
 };
 
-chooseTitle();
+getTitles();
 
-module.exports = "chooseTitle";
+module.exports = "getTitles";
