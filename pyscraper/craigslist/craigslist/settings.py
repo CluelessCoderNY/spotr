@@ -13,7 +13,8 @@ BOT_NAME = 'craigslist'
 
 SPIDER_MODULES = ['craigslist.spiders']
 NEWSPIDER_MODULE = 'craigslist.spiders'
-FEED_EXPORT_FIELDS = ['text', 'link', 'date']
+FEED_EXPORT_FIELDS = ['listingTitle', 'date',
+                      'link', 'description', 'images', 'listingAttrs']
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
