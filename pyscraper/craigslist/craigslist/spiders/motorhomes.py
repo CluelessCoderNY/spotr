@@ -40,7 +40,13 @@ class MotorhomesSpider(scrapy.Spider):
         images = response.xpath('//*[@id="thumbs"]//@src').extract()
         images = [image.replace("50x50c", "600x450") for image in images]
 
-        description = response.xpath('//*[@id="postingbody"]/text()').extract()
+        rawDescriptions = response.xpath(
+            '//*[@id="postingbody"]/text()').extract()
+
+        description = ""
+
+        for desc in rawDescriptions:
+            description += desc.replace('\n', '')
 
         yield{
             "date": date,
