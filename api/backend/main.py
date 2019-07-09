@@ -1,22 +1,16 @@
-from flask import Blueprint
+from flask import Blueprint, request
 from flask import jsonify
 
 from .extensions import mongo
 
+import copy
 import json
 from bson import ObjectId
 
 main = Blueprint('main', __name__)
 
-
-class JSONEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, ObjectId):
-            return str(o)
-        return json.JSONEncoder.default(self, o)
-
-
 #################################begin starturl routes###############################
+
 
 @main.route('/createkeyword')
 def createKw():
@@ -32,10 +26,16 @@ def findKw():
     return f'<h1>Keyword: { keyword["keyword"] } </h1>'
 
 
+@main.route('/findkeywords')
+def findAllKw():
+    keyword_collection = mongo.db.keywords
+    output = []
+
+    for key in keyword_collection.find():
+        output.append({'keyword': key['keyword']})
+    return jsonify({'result': output})
 
 
-
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 @main.route('/updatekeyword')
 def updateKw():
     keyword_collection = mongo.db.keywords
@@ -75,6 +75,16 @@ def find():
     return f'<h1>Start Url: { starturl["starturl"] } </h1>'
 
 
+@main.route('/findstarturls')
+def findAllStartUrls():
+    starturl_collection = mongo.db.starturls
+    output = []
+
+    for url in starturl_collection.find():
+        output.append({'starturl': url['starturl']})
+    return jsonify({'result': output})
+
+
 @main.route('/updatestarturl')
 def update():
     starturl_collection = mongo.db.starturls
@@ -98,7 +108,29 @@ def delete():
     return '<h1>Deleted Start Url!</h1>'
 
 #################################end starturl routes###############################
+#################################begin scraped results routes######################
 
 
-# for the find route. find multiple keys.
-# Language: { user["language"] }
+@main.route('/findpost')
+def findpost():
+    post_collection = mongo.db.posts
+    link = request.args.get('link')
+
+    if link == None:
+        posts = post_collection.find()
+        q = []
+        for post in posts:
+            s_p = copy.deepcopy(post)
+            s_p['_id'] = str(s_p['_id'])
+            q.append(s_p)
+
+            j_d = json.dumps(q)
+        return '{"data": "' + j_d + '"}'
+    else:
+        q = post_collection.find_one({'link': link})
+        q['_id'] = str(q['_id'])
+
+        return q
+    
+
+#################################end scraped results routes########################
