@@ -12,10 +12,10 @@ main = Blueprint('main', __name__)
 #################################begin starturl routes###############################
 
 
-@main.route('/createkeyword')
+@main.route('/createkeyword', methods = ['GET', 'POST'])
 def createKw():
     keyword_collection = mongo.db.keywords
-    keyword_collection.insert({'keyword': 'Class B'})
+    keyword_collection.insert(request.get_json())
     return '<h1>Added new keyword!</h1>'
 
 

@@ -1,24 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import { Keywords } from "./components/Keywords";
+import { KeywordForm } from "./components/KeywordForm";
+import { Container } from "semantic-ui-react";
 
 function App() {
+  const [listing, setListing] = useState([]);
+
+  useEffect(() => {
+    fetch("/findkeywords").then(response =>
+      response.json().then(data => {
+        setListing(data.result);
+      })
+    );
+  }, []);
+
+  console.log(listing);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='App'>
+      <Container style={{ marginTop: 40 }}>
+        <KeywordForm
+          onNewKeyword={key =>
+            setListing(currentKeywords => [...currentKeywords, key])
+          }
+        />
+        <Keywords listing={listing} />
+      </Container>
     </div>
   );
 }
