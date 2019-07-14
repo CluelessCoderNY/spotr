@@ -4,7 +4,8 @@ import scrapy
 
 class MotorhomesSpider(scrapy.Spider):
     name = 'motorhomes'
-    # allowed_domains = ['https://craigslist.org']
+
+    # todo: get all active start urls
     start_urls = ['https://newyork.craigslist.org/search/rva?postedToday=1']
 
     def parse(self, response):
@@ -48,6 +49,7 @@ class MotorhomesSpider(scrapy.Spider):
         for desc in rawDescriptions:
             description += desc.replace('\n', '')
 
+        # todo: put current start url in this object
         yield{
             "date": date,
             "link": link,

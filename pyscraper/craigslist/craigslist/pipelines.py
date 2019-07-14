@@ -33,12 +33,16 @@ class MongoDBPipeline(object):
 
     def score_item(self, statement):
         score = 0
+        # todo: add dynamic weights
         score += pyscore.MatchExact(keywords, statement)
         score += pyscore.MatchNLP(tagged_keywords, statement)
 
         return score
 
     def process_item(self, item, spider):
+        # todo pull out the start url
+        # find keywords that link to the start url
+
         found_item = self.collection.find_one({"link": item['link']})
         # found_item = None
 
